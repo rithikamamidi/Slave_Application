@@ -1,0 +1,2 @@
+rootProject.name='Slave Application'
+include ':app'

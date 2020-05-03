@@ -18,5 +18,40 @@
         android:layout_height="wrap_content"
         android:id="@+id/status_text"
         android:text = "---------STATUS TEXT--------"/>
-
+    <TextView
+        android:textSize="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/batteryLevel"
+        />
+    <TextView
+        android:id="@+id/address"
+        android:hint="Address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/city"
+        android:hint="City"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/country"
+        android:hint="Country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/latitude"
+        android:hint="Latitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/longitude"
+        android:hint="Longitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 </LinearLayout>

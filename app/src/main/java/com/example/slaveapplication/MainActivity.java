@@ -172,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
             country.setText("denied");
             latitude_GPS.setText("denied");
             longitude_GPS.setText("denied");
-
         }
     }
 
@@ -227,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         connectionsClient.sendPayload(
                                 endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
-                        try {
+                       /* try {
                             obj.put("Latitude", jLatitude);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -240,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         connectionsClient.sendPayload(
-                                endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
+                                endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));*/
 
                     } else {
                         statusText.append("\n"+"Connection failed :(");
@@ -268,49 +267,116 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     Iterator<String> keys = request_to_continue.keys();
+                    String A = null, B=null;
+                    int r_a=0, r_b=0,c_a=0,c_b=0,s_itr=0,e_itr=0;
                     while(keys.hasNext()) {
                         String key = keys.next();
-                        if (key.equals("request")) {
-                            AlertDialog.Builder mBuilder=new AlertDialog.Builder(MainActivity.this);
-                            mBuilder.setTitle("Do You Want to Proceed with the processing?");
-                            mBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    JSONObject obj = new JSONObject();
 
-                                    try {
-                                        obj.put("request", "yes");
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    connectionsClient.sendPayload(
-                                            masterEndpoint, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
-                                }
-                            });
-                            mBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    JSONObject obj = new JSONObject();
+//                        if (key.equals("request")) {
+//                            AlertDialog.Builder mBuilder=new AlertDialog.Builder(MainActivity.this);
+//                            mBuilder.setTitle("Do you Want to Proceed with the processing?");
+//                            mBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    JSONObject obj = new JSONObject();
+//
+//                                    try {
+//                                        obj.put("request", "yes");
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    connectionsClient.sendPayload(
+//                                            masterEndpoint, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
+//                                }
+//                            });
+//                            mBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    JSONObject obj = new JSONObject();
+//
+//                                    try {
+//                                        obj.put("request", "no");
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    connectionsClient.sendPayload(
+//                                            masterEndpoint, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
+//                                }
+//
+//                            });
+//                            AlertDialog alertDialog=mBuilder.create();
+//                            alertDialog.show();
+//
+//                        }
+                          switch(key) {
+                              case "matrix_A":
+                                  try {
+                                      A = (String) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "matrix_B":
+                                  try {
+                                      B = (String) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "rows_a":
+                                  try {
+                                      r_a = (int) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "columns_a":
+                                  try {
+                                      c_a = (int) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "rows_b":
+                                  try {
+                                      r_b = (int) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "columns_b":
+                                  try {
+                                      c_b = (int) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "s_itr":
+                                  try {
+                                      s_itr = (int) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                              case "e_itr":
+                                  try {
+                                      e_itr = (int) request_to_continue.get(key);
+                                  } catch (JSONException e) {
+                                      e.printStackTrace();
+                                  }
+                          }
 
-                                    try {
-                                        obj.put("request", "no");
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    connectionsClient.sendPayload(
-                                            masterEndpoint, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
-                                }
+                            //construct result to json
+                            //connectionsClient.sendPayload(masterEndpoint,)
+                        }
+                    )
 
-                            });
-                            AlertDialog alertDialog=mBuilder.create();
-                            alertDialog.show();
-
+                    int[][] c = new int[r_a][c_b];
+                    for(int i=s_itr;i<e_itr;i++)
+                    {
+                        for(int j=0;j<c_b;j++)
+                        {
+                            for(int k=0;k<r_b;k++)
+                            {
+                                c[i][j] = c[i][j]+A[i][k]+B[k][j];
+                            }
                         }
                     }
-
-
+                    }
                     System.out.println("Payload received");
-                }
 
                 @Override
                 public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {

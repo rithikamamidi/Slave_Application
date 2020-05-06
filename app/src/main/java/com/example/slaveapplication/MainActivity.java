@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -257,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
                     String textMessage = new String(payload.asBytes(), UTF_8);
+                    System.out.println("RECEIEVDDDDDDDDDD"+textMessage);
                     statusText.append("\n" + "Payload received" + textMessage);
                     JSONObject payload_received = null;
                     try {
@@ -425,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
                         mat_c_string = mat_c_string.replaceAll(",$", "");
                         JSONObject matrix_calculation_result = new JSONObject();
                         try {
+
                             matrix_calculation_result.put("s_itr", s_itr);
                             matrix_calculation_result.put("e_itr", e_itr);
                             matrix_calculation_result.put("r_a", r_a);
@@ -436,6 +439,11 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
+                        try {
+                            TimeUnit.SECONDS.sleep(2);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         connectionsClient.sendPayload(masterEndpoint, Payload.fromBytes(matrix_calculation_result.toString().getBytes(UTF_8)));
 
                     }

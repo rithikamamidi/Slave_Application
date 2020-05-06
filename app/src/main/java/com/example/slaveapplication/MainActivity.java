@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int j = 0; j < r_a; j++) {
                             for (int k = 0; k < c_a; k++) {
                                 matrix_a[j][k] = Integer.parseInt(array_a[i]);
-                                System.out.println("HERE" + matrix_a[j][k]);
+                                System.out.println("HERE MATRIX A" + matrix_a[j][k]);
                                 i++;
                             }
                         }
@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int j = 0; j < r_b; j++) {
                             for (int k = 0; k < c_b; k++) {
                                 matrix_b[j][k] = Integer.parseInt(array_b[i]);
-                                System.out.println("HERE B" + matrix_b[j][k]);
+                                System.out.println("HERE MATRIX B" + matrix_b[j][k]);
                                 i++;
                             }
                         }
@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int x = s_itr; x < e_itr; x++) {
                             for (int j = 0; j < c_b; j++) {
                                 for (int k = 0; k < r_b; k++) {
-                                    matrix_c[x][j] = matrix_c[x][j] + matrix_a[x][k] + matrix_b[k][j];
+                                    matrix_c[x][j] = matrix_c[x][j] + matrix_a[x][k]*matrix_b[k][j];
                                 }
                             }
                         }

@@ -53,6 +53,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -65,9 +67,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView battery;
     public String batteryLevel_slave;
     public String masterEndpoint;
-    private TextView address;
-    private TextView city;
-    private TextView country;
     private double lati;
     public double jLatitude;
     public double jLongitude;
@@ -96,9 +95,6 @@ public class MainActivity extends AppCompatActivity {
         statusText = findViewById(R.id.status_text);
         battery = (TextView) findViewById(R.id.batteryLevel);
         this.registerReceiver(this.batterylevelReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        address = findViewById(R.id.address);
-        city = findViewById(R.id.city);
-        country = findViewById(R.id.country);
         latitude_GPS = findViewById(R.id.latitude);
         longitude_GPS = findViewById(R.id.longitude);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
@@ -113,9 +109,6 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                         List<Address> addressList = geocoder.getFromLocation(latitude, longitude, 1);
-                        address.setText(addressList.get(0).getAddressLine(0));
-                        city.setText(addressList.get(0).getAdminArea());
-                        country.setText(addressList.get(0).getCountryName());
                         lati = addressList.get(0).getLatitude();
                         jLatitude = addressList.get(0).getLatitude();
                         jLongitude = addressList.get(0).getLongitude();
@@ -160,16 +153,10 @@ public class MainActivity extends AppCompatActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-                address.setText("getting Location");
-                city.setText("getting Location");
-                country.setText("getting Location");
                 latitude_GPS.setText("getting Location");
                 longitude_GPS.setText("getting Location");
             }
         } else {
-            address.setText("denied");
-            city.setText("denied");
-            country.setText("denied");
             latitude_GPS.setText("denied");
             longitude_GPS.setText("denied");
         }
@@ -213,32 +200,68 @@ public class MainActivity extends AppCompatActivity {
                     if (result.getStatus().isSuccess()) {
                         statusText.append("\n" + "Connection successful!!");
                         System.out.println("Connection successful");
+
                         masterEndpoint = endpointId;
-                        String batteryPercentage = batteryLevel_slave;
+                        final String batteryPercentage = batteryLevel_slave;
                         JSONObject obj = new JSONObject();
 
-                        try {
+                        /*try {
                             obj.put("batteryLevel", batteryPercentage);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         connectionsClient.sendPayload(
-                                endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
-                       /* try {
-                            obj.put("Latitude", jLatitude);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        connectionsClient.sendPayload(
-                                endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
-                        try {
-                            obj.put("Longitude", jLongitude);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        connectionsClient.sendPayload(
                                 endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));*/
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                        mBuilder.setTitle("Do you Want to moniter the battery level?");
+                        mBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                               final JSONObject obj_bl = new JSONObject();
+                                final JSONObject obj_location = new JSONObject();
+                                Timer timer = new Timer();
+                                timer.scheduleAtFixedRate(new TimerTask()
+                                {
+                                    public void run()
+                                    {
+                                        // Your code
+                                        try {
+                                            obj_bl.put("batteryLevel", batteryPercentage);
+                                            obj_location.put("latitude",jLatitude);
+                                            obj_location.put("longitude",jLongitude);
+                                            obj_bl.put("location", obj_location);
 
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        connectionsClient.sendPayload(
+                                                masterEndpoint, Payload.fromBytes(obj_bl.toString().getBytes(StandardCharsets.UTF_8)));
+
+
+
+                                    }
+                                }, 5000, 5000);
+
+
+                            }
+                        });
+                        mBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                JSONObject obj = new JSONObject();
+
+                                try {
+                                    obj.put("batterylevel", "disconnect");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                connectionsClient.sendPayload(
+                                        masterEndpoint, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));
+                            }
+
+                        });
+                        AlertDialog alertDialog = mBuilder.create();
+                        alertDialog.show();
                     } else {
                         statusText.append("\n" + "Connection failed :(");
                         System.out.println("Connection failed");

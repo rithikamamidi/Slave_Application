@@ -55,6 +55,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -232,6 +233,12 @@ public class MainActivity extends AppCompatActivity {
                                             obj_bl.put("location", obj_location);
 
                                         } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        try {
+                                            TimeUnit.SECONDS.sleep(2);
+                                        } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
                                         connectionsClient.sendPayload(
@@ -435,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int x = s_itr; x < e_itr; x++) {
                             for (int j = 0; j < c_b; j++) {
                                 for (int k = 0; k < r_b; k++) {
-                                    matrix_c[x][j] = matrix_c[x][j] + matrix_a[x][k] + matrix_b[k][j];
+                                    matrix_c[x][j] = matrix_c[x][j] + matrix_a[x][k] * matrix_b[k][j];
                                 }
                             }
                         }

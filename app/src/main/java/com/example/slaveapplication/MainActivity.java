@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private ConnectionsClient connectionsClient;
     private final String codeName = "slave";
     private TextView statusText;
+    private TextView executionTime;
     private TextView battery;
     public String batteryLevel_slave;
     public String masterEndpoint;
@@ -76,12 +77,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView longitude_GPS;
     LocationManager locationManager;
     LocationListener locationListener;
+    public long startTime;
+    public long endTime;
+    public long duration;
 
     private BroadcastReceiver batterylevelReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-            battery.setText(String.valueOf(level) + "%");
+//            battery.setText(String.valueOf(level) + "%");
             batteryLevel_slave = String.valueOf(level);
         }
     };
@@ -89,12 +93,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        startTime = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkAndRequestPermissions();
         connectionsClient = Nearby.getConnectionsClient(this);
         statusText = findViewById(R.id.status_text);
-        battery = (TextView) findViewById(R.id.batteryLevel);
+//        battery = (TextView) findViewById(R.id.batteryLevel);
         this.registerReceiver(this.batterylevelReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         latitude_GPS = findViewById(R.id.latitude);
         longitude_GPS = findViewById(R.id.longitude);
@@ -158,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
                 longitude_GPS.setText("getting Location");
             }
         } else {
-            latitude_GPS.setText("denied");
-            longitude_GPS.setText("denied");
+            latitude_GPS.setText("getting latitude");
+            longitude_GPS.setText("getting longitude");
         }
     }
 
@@ -191,15 +196,15 @@ public class MainActivity extends AppCompatActivity {
             new ConnectionLifecycleCallback() {
                 @Override
                 public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
-                    statusText.append("\n" + "Connection Initiated" + endpointId);
-                    statusText.append("\n" + "Accepting connection" + endpointId + connectionInfo);
+//                    statusText.append("\n" + "Connection Initiated" + endpointId);
+//                    statusText.append("\n" + "Accepting connection" + endpointId + connectionInfo);
                     connectionsClient.acceptConnection(endpointId, payloadCallback);
                 }
 
                 @Override
                 public void onConnectionResult(String endpointId, ConnectionResolution result) {
                     if (result.getStatus().isSuccess()) {
-                        statusText.append("\n" + "Connection successful!!");
+                        statusText.append("\n" + "Connection successful! With client having endpoint:"+endpointId);
                         System.out.println("Connection successful");
 
                         masterEndpoint = endpointId;
@@ -214,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                         connectionsClient.sendPayload(
                                 endpointId, Payload.fromBytes(obj.toString().getBytes(StandardCharsets.UTF_8)));*/
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                        mBuilder.setTitle("Do you Want to moniter the battery level?");
+                        mBuilder.setTitle("Do you want to let master monitor the battery level?");
                         mBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -236,18 +241,14 @@ public class MainActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                         }
 
-                                        try {
-                                            TimeUnit.SECONDS.sleep(2);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
+
                                         connectionsClient.sendPayload(
                                                 masterEndpoint, Payload.fromBytes(obj_bl.toString().getBytes(StandardCharsets.UTF_8)));
 
 
 
                                     }
-                                }, 5000, 5000);
+                                }, 1000, 5000);
 
 
                             }
@@ -287,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
                     String textMessage = new String(payload.asBytes(), UTF_8);
-                    statusText.append("\n" + "Payload received" + textMessage);
+//                    statusText.append("\n" + "Payload received" + textMessage);
                     JSONObject payload_received = null;
                     try {
                         payload_received = new JSONObject(textMessage);
@@ -302,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                         switch (key) {
                             case "request": {
                                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                                mBuilder.setTitle("Do you Want to Proceed with the processing?");
+                                mBuilder.setTitle("Do you want to proceed with the processing?");
                                 mBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -438,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
                             System.out.println(Arrays.toString(row));
                         }
 
-                        statusText.append("\nTest data" + matrix_a.toString() + matrix_b.toString());
+//                        statusText.append("\nTest data" + matrix_a.toString() + matrix_b.toString());
                         for (int x = s_itr; x < e_itr; x++) {
                             for (int j = 0; j < c_b; j++) {
                                 for (int k = 0; k < r_b; k++) {
@@ -466,6 +467,13 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
+                        endTime = System.currentTimeMillis();
+                        duration = (endTime - startTime);
+                        executionTime = findViewById(R.id.et);
+                        statusText.append("\n"+"Sent computation result to master");
+                        System.out.println("durataion:"+duration);
+
+
                         connectionsClient.sendPayload(masterEndpoint, Payload.fromBytes(matrix_calculation_result.toString().getBytes(UTF_8)));
 
                     }
@@ -476,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {
-                    statusText.append("\n" + "Payload Transfer");
+//                    statusText.append("\n" + "Payload Transfer");
                 }
             };
 

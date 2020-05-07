@@ -9,6 +9,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="15dp"
+
         android:orientation="vertical"
         tools:context=".MainActivity">
 
@@ -16,30 +18,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="advertiseDevice"
-            android:text="Advertise Device" />
-
-        <TextView
-            android:id="@+id/status_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="---------STATUS TEXT--------" />
-
-        <TextView
-            android:id="@+id/batteryLevel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="50dp" />
+            android:text="Advertise Device"
+            android:textSize="15dp" />
 
         <TextView
             android:id="@+id/latitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="15dp"
             android:hint="Latitude" />
 
         <TextView
             android:id="@+id/longitude"
             android:layout_width="wrap_content"
+            android:textSize="15dp"
             android:layout_height="wrap_content"
             android:hint="Longitude" />
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:text="---------STATUS TEXT--------" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/batteryLevel"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textSize="50dp" />-->
+
+
+
+        <TextView
+            android:id="@+id/et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>
